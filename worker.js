@@ -4,38 +4,40 @@ class SimulationHandler {
     this.endDate = config.simulationConfig.endDate;
     this.simItems = config.simulationItems;
     this.config = config;
-    this.numSims = config.simulationConfig.numSims;
+    this.totalSims = config.simulationConfig.numSims;
+    this.currentSim = 0;
     this.sendDebugMessage("Starting with config:")
     this.sendDebugMessage(JSON.stringify(this.config));
     this.monthlyBalances = {};
     this.stopSim = false;
+
+    this.sendStatusMessage(true /* active */);
   }
 
-  runSimulations() {
-    this.sendStatusMessage(true /* active */);
-    // Run through each simulation
-    for (var i = 1; i <= this.numSims; i++) {
-      if (this.stopSim) {
-        this.abortSimulation();
-        break;
-      }
+  continueSimulations() {    
+    // Run through 10 simulations and send a status update
+    for (var i = this.currentSim; i < this.currentSim + 10 && i < this.totalSims; i++) {
       this.sendDebugMessage('Running simulation #' + i);
       this.runSimulation();
-      this.sendStatusPercent(Math.round(100 * i / this.numSims));
     }
-    //this.sendDebugMessage("BALANCES");
-    //this.sendDebugMessage(JSON.stringify(this.monthlyBalances));
-    this.calculateAndSendResults();
-    this.sendStatusMessage(false /* active */);
-  }
-
-  cancelSimulation() {
-    this.stopSim = true;
+    if (!this.stopSim) {
+      // Send the current percent progress unless we're cancelling the simulation.
+      // The progress message triggers a `continue` message from the main JS.
+      this.currentSim = i;
+      this.sendDebugMessage("Finished 10 sims...");
+      this.sendStatusPercent(Math.round(100 * i / this.totalSims));
+    }
+    if (i == this.totalSims - 1) {
+      //this.sendDebugMessage("BALANCES");
+      //this.sendDebugMessage(JSON.stringify(this.monthlyBalances));
+      this.calculateAndSendResults();
+      this.sendStatusMessage(false /* active */);
+    }
   }
 
   abortSimulation() {
     this.monthlyBalances = {};
-    this.stopSim = false;
+    this.stopSim = true;
     this.sendStatusMessage(false /* active */);
   }
 
@@ -286,12 +288,13 @@ onmessage = function(e) {
     case 'start':
       console.log('setting config');
       simulationHandler.setConfig(message);
-      console.log('running simulation');
-      simulationHandler.runSimulations();
+    case 'continue':
+    console.log('continuing simulation');
+      simulationHandler.continueSimulations();
       break;
     case 'abort':
       console.log('received abort signal');
-      simulationHandler.cancelSimulation();
+      simulationHandler.abortSimulation();
       break;
   }
 }

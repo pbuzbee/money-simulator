@@ -360,7 +360,9 @@ class SimulationContainer extends React.Component {
     var simStatus = this.state.simulationStatus;
     switch (e.data.type) {
       case 'percent':
-        simStatus.percent = e.data.percent; break;
+        simStatus.percent = e.data.percent;
+        this.worker.postMessage({action: 'continue'});
+        break;
       case 'debug':
         simStatus.workerMessages.push(e.data.message); break;
       case 'status':
