@@ -17,3 +17,7 @@
   display: block;
   height: 100%;
 }
+
+.simulation-item.invalid .simulation-item-name {
+  color: #a00;
+}

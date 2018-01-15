@@ -47,7 +47,7 @@ class SimulationHandler {
     // Initialize all items
     var simItems = [];
     for (var simItem of this.simItems) {
-      if (!simItem.enabled) continue;
+      if (!simItem.enabled || !simItem.valid) continue;
       switch (simItem.simType) {
         case 'windfall':
           simItems.push(new Windfall(simItem.values[0], simItem.values[1]));

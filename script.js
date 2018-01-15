@@ -1,7 +1,6 @@
 class SimulationItem extends React.Component {
 
   renderNameField(isDisabled) {
-    var isEnabled = this.props.simulation.enabled && this.props.simulation.validated;
     return (
       <div>
       <p>{JSON.stringify(this.props.simulation)}</p>
@@ -11,10 +10,34 @@ class SimulationItem extends React.Component {
     );
   }
 
+  renderDateInput(valueNum, isDisabled, labelText, min = null, max = null) {
+     return (
+        <p><label>{labelText} <input type="date" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} min={min} max={max} disabled={isDisabled} required /></label></p>
+      )
+  }
+
+  renderNumberInput(valueNum, isDisabled, labelText, min) {
+    return (
+      <p><label>{labelText} <input type="number" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} min={min} required /></label></p>
+      )
+  }
+
+  renderTextInput(valueNum, isDisabled, labelText) {
+    return (
+      <p><label>{labelText} <input type="text" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} required /></label></p>
+    )
+  }
+
+  renderCheckboxInput(valueNum, isDisabled, labelText) {
+    return (
+      <p><label>{labelText} <input type="checkbox" name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} disabled={isDisabled} /></label></p>
+    )
+  }
+
   renderInput(valueNum, isDisabled, labelText, inputType) {
     if (inputType != 'checkbox') {
       return (
-        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} /></label></p>
+        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} required /></label></p>
       )
     } else {
       return (
@@ -34,7 +57,7 @@ class SimulationItem extends React.Component {
   render() {
     var toggleText = this.props.isActive ? 'Close' : 'Open';
     return (
-      <div className="simulation-item">
+      <div className={this.props.simulation.valid ? "simulation-item" : "simulation-item invalid"} data-item-num={this.props.num}>
         <div className="simulation-item-summary">
           <button onClick={this.props.onActivate}>{toggleText}</button>
           <span className="simulation-item-name">{this.props.simulation.name}</span>
@@ -72,11 +95,11 @@ class Loan extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderInput(0, this.props.isDisabled, 'Loan date:', 'date')}
-        {this.renderInput(1, this.props.isDisabled, 'Loan term (# of years)', 'number')}
-        {this.renderInput(2, this.props.isDisabled, 'Interest rate (%)', 'text')}
-        {this.renderInput(3, this.props.isDisabled, 'Loan amount ($)', 'number')}
-        {this.renderInput(4, this.props.isDisabled, 'Monthly payment ($/month)', 'text')}
+        {this.renderDateInput(0, this.props.isDisabled, 'Loan date: ', this.props.simConfig.startDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(1, this.props.isDisabled, 'Loan term (# of years)', 0)}
+        {this.renderTextInput(2, this.props.isDisabled, 'Interest rate (%)')}
+        {this.renderNumberInput(3, this.props.isDisabled, 'Loan amount ($)', 0)}
+        {this.renderTextInput(4, this.props.isDisabled, 'Monthly payment ($/month)')}
       </div>
     );
   }
@@ -106,9 +129,9 @@ class Expenditure extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderInput(0, this.props.isDisabled, 'Start date:', 'date')}
-        {this.renderInput(1, this.props.isDisabled, 'End date:', 'date')}
-        {this.renderInput(2, this.props.isDisabled, 'Cost ($/month)', 'number')}
+        {this.renderDateInput(0, this.props.isDisabled, 'Start date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
+        {this.renderDateInput(1, this.props.isDisabled, 'End date:', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(2, this.props.isDisabled, 'Cost ($/month)', 0)}
       </div>
     );
   }
@@ -136,8 +159,8 @@ class Windfall extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderInput(0, this.props.isDisabled, 'Date:', 'date')}
-        {this.renderInput(1, this.props.isDisabled, 'Amount:', 'number')}
+        {this.renderDateInput(0, this.props.isDisabled, 'Date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(1, this.props.isDisabled, 'Amount:', 0)}
       </div>
     );
   }
@@ -167,9 +190,9 @@ class Job extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderInput(0, this.props.isDisabled, 'Start date:', 'date')}
-        {this.renderInput(1, this.props.isDisabled, 'End date:', 'date')}
-        {this.renderInput(2, this.props.isDisabled, 'Salary ($/year)', 'number')}
+        {this.renderDateInput(0, this.props.isDisabled, 'Start date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
+        {this.renderDateInput(1, this.props.isDisabled, 'End date:', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(2, this.props.isDisabled, 'Salary ($/year)', 0)}
       </div>
     );
   }
@@ -319,7 +342,7 @@ class SimulationContainer extends React.Component {
     simulationItems.push({
       simType: simType,
       enabled: true,
-      validated: false,
+      valid: false,
       errorMessage: '',
       name: simType.charAt(0).toUpperCase() + simType.slice(1),
       values: ['', '', '', '', '']
@@ -387,6 +410,10 @@ class SimulationContainer extends React.Component {
           // Recalculate loan amount
           simItem.values[3] = calculatePrincipal(simItem.values[4], simItem.values[2], simItem.values[1]);
         }
+      }
+      simItem.valid = false;
+      if (e.target.validity.valid) {
+        simItem.valid = document.querySelector('.simulation-item[data-item-num="' + itemNum + '"] input:invalid') === null;
       }
     }
     simItems[itemNum] = simItem;
