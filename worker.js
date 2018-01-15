@@ -9,7 +9,7 @@ class SimulationHandler {
     this.sendDebugMessage("Starting with config:")
     this.sendDebugMessage(JSON.stringify(this.config));
     this.monthlyBalances = {};
-    this.stopSim = false;
+    this.abort = false;
 
     this.sendStatusMessage(true /* active */);
   }
@@ -20,25 +20,27 @@ class SimulationHandler {
       this.sendDebugMessage('Running simulation #' + i);
       this.runSimulation();
     }
-    if (!this.stopSim) {
-      // Send the current percent progress unless we're cancelling the simulation.
-      // The progress message triggers a `continue` message from the main JS.
-      this.currentSim = i;
-      this.sendDebugMessage("Finished 10 sims...");
-      this.sendStatusPercent(Math.round(100 * i / this.totalSims));
+    if (this.abort) {
+      this.monthlyBalances = {};
+      this.sendStatusMessage(false /* active */);
+      return;
     }
-    if (i == this.totalSims - 1) {
+    if (i >= this.totalSims) {
+      // If this is the last simulation, send the final results.
       //this.sendDebugMessage("BALANCES");
       //this.sendDebugMessage(JSON.stringify(this.monthlyBalances));
       this.calculateAndSendResults();
       this.sendStatusMessage(false /* active */);
+      return;
     }
+
+    this.currentSim = i;
+    this.sendDebugMessage("Finished 10 sims...");
+    this.sendStatusPercent(Math.round(100 * i / this.totalSims));
   }
 
   abortSimulation() {
-    this.monthlyBalances = {};
-    this.stopSim = true;
-    this.sendStatusMessage(false /* active */);
+    this.abort = true;
   }
 
   runSimulation() {
@@ -107,11 +109,11 @@ class SimulationHandler {
     var results75thPercentile = [];
     var results95thPercentile = [];
 
-    var index5thPercentile = Math.max(0, Math.round(this.numSims * 0.05) - 1);
-    var index25thPercentile = Math.round(this.numSims * 0.25) - 1;
-    var index50thPercentile = Math.round(this.numSims * 0.5) - 1;
-    var index75thPercentile = Math.round(this.numSims * 0.75) - 1;
-    var index95thPercentile = Math.round(this.numSims * 0.95) - 1;
+    var index5thPercentile = Math.max(0, Math.round(this.totalSims * 0.05) - 1);
+    var index25thPercentile = Math.round(this.totalSims * 0.25) - 1;
+    var index50thPercentile = Math.round(this.totalSims * 0.5) - 1;
+    var index75thPercentile = Math.round(this.totalSims * 0.75) - 1;
+    var index95thPercentile = Math.round(this.totalSims * 0.95) - 1;
 
     var labels = [];
 
@@ -163,7 +165,7 @@ class SimulationHandler {
   }
 
   sendDebugMessage(text) {
-    postMessage({type: 'debug', message: text});
+    console.log(text);
   }
 
   sendStatusMessage(active) {
@@ -289,7 +291,6 @@ onmessage = function(e) {
       console.log('setting config');
       simulationHandler.setConfig(message);
     case 'continue':
-    console.log('continuing simulation');
       simulationHandler.continueSimulations();
       break;
     case 'abort':

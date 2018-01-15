@@ -183,13 +183,9 @@ class SimulationManager extends React.Component {
     }
     return (
       <div>
-        <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 ? this.props.status.percent.toString() + '%' : null}</p>
+        <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
         <p><label>End date: <input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /></label></p>
         <p><label># of simulations: <input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} /></label></p>
-        <details>
-          <summary>Debug messages</summary>
-          {messages}
-        </details>
       </div>
     );
   }
@@ -314,7 +310,6 @@ class SimulationContainer extends React.Component {
       simulationStatus: {
         active: false,
         percent: 0,
-        workerMessages: [],
         results: {},
         labels: {},
         finished: false,
@@ -363,8 +358,6 @@ class SimulationContainer extends React.Component {
         simStatus.percent = e.data.percent;
         this.worker.postMessage({action: 'continue'});
         break;
-      case 'debug':
-        simStatus.workerMessages.push(e.data.message); break;
       case 'status':
         simStatus.active = e.data.active; break;
       case 'results':
