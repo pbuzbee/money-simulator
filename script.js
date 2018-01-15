@@ -1,24 +1,24 @@
 class SimulationItem extends React.Component {
 
-  renderNameField() {
+  renderNameField(isDisabled) {
     var isEnabled = this.props.simulation.enabled && this.props.simulation.validated;
     return (
       <div>
       <p>{JSON.stringify(this.props.simulation)}</p>
-      <p><label><input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} /> Enabled</label></p>
-      <p><label>Name: <input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} /></label></p>
+      <p><label><input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={isDisabled} /> Enabled</label></p>
+      <p><label>Name: <input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} disabled={isDisabled} /></label></p>
       </div>
     );
   }
 
-  renderInput(valueNum, labelText, inputType) {
+  renderInput(valueNum, isDisabled, labelText, inputType) {
     if (inputType != 'checkbox') {
       return (
-        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} /></label></p>
+        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} /></label></p>
       )
     } else {
       return (
-        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} /></label></p>
+        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} disabled={isDisabled} /></label></p>
       )
     }
   }
@@ -71,12 +71,12 @@ class Loan extends SimulationItem {
   renderActiveContent() {
     return (
       <div>
-        {this.renderNameField()}
-        {this.renderInput(0, 'Loan date:', 'date')}
-        {this.renderInput(1, 'Loan term (# of years)', 'number')}
-        {this.renderInput(2, 'Interest rate (%)', 'text')}
-        {this.renderInput(3, 'Loan amount ($)', 'number')}
-        {this.renderInput(4, 'Monthly payment ($/month)', 'text')}
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderInput(0, this.props.isDisabled, 'Loan date:', 'date')}
+        {this.renderInput(1, this.props.isDisabled, 'Loan term (# of years)', 'number')}
+        {this.renderInput(2, this.props.isDisabled, 'Interest rate (%)', 'text')}
+        {this.renderInput(3, this.props.isDisabled, 'Loan amount ($)', 'number')}
+        {this.renderInput(4, this.props.isDisabled, 'Monthly payment ($/month)', 'text')}
       </div>
     );
   }
@@ -105,10 +105,10 @@ class Expenditure extends SimulationItem {
   renderActiveContent() {
     return (
       <div>
-        {this.renderNameField()}
-        {this.renderInput(0, 'Start date:', 'date')}
-        {this.renderInput(1, 'End date:', 'date')}
-        {this.renderInput(2, 'Cost ($/month)', 'number')}
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderInput(0, this.props.isDisabled, 'Start date:', 'date')}
+        {this.renderInput(1, this.props.isDisabled, 'End date:', 'date')}
+        {this.renderInput(2, this.props.isDisabled, 'Cost ($/month)', 'number')}
       </div>
     );
   }
@@ -135,9 +135,9 @@ class Windfall extends SimulationItem {
   renderActiveContent() {
     return (
       <div>
-        {this.renderNameField()}
-        {this.renderInput(0, 'Date:', 'date')}
-        {this.renderInput(1, 'Amount:', 'number')}
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderInput(0, this.props.isDisabled, 'Date:', 'date')}
+        {this.renderInput(1, this.props.isDisabled, 'Amount:', 'number')}
       </div>
     );
   }
@@ -166,10 +166,10 @@ class Job extends SimulationItem {
   renderActiveContent() {
     return (
       <div>
-        {this.renderNameField()}
-        {this.renderInput(0, 'Start date:', 'date')}
-        {this.renderInput(1, 'End date:', 'date')}
-        {this.renderInput(2, 'Salary ($/year)', 'number')}
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderInput(0, this.props.isDisabled, 'Start date:', 'date')}
+        {this.renderInput(1, this.props.isDisabled, 'End date:', 'date')}
+        {this.renderInput(2, this.props.isDisabled, 'Salary ($/year)', 'number')}
       </div>
     );
   }
@@ -177,10 +177,6 @@ class Job extends SimulationItem {
 
 class SimulationManager extends React.Component {
   render() {
-    var messages = [];
-    for (var i = 0; i < this.props.status.workerMessages.length; i++) {
-      messages.push(<span key={i}>{this.props.status.workerMessages[i]}<br /></span>);
-    }
     return (
       <div>
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
@@ -189,7 +185,6 @@ class SimulationManager extends React.Component {
       </div>
     );
   }
-
 }
 
 
@@ -416,13 +411,13 @@ class SimulationContainer extends React.Component {
     var isActive = this.state.activeItem === i;
     switch (simItem.simType) {
       case 'loan':
-        return <Loan key={i} num={i} simulation={simItem} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+        return <Loan key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
       case 'windfall':
-        return <Windfall key={i} num={i} simulation={simItem} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+        return <Windfall key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
       case 'expenditure':
-        return <Expenditure key={i} num={i} simulation={simItem} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+        return <Expenditure key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
       case 'job':
-        return <Job key={i} num={i} simulation={simItem} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+        return <Job key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
     }
   }
 

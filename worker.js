@@ -3,21 +3,19 @@ class SimulationHandler {
     this.startDate = config.simulationConfig.startDate;
     this.endDate = config.simulationConfig.endDate;
     this.simItems = config.simulationItems;
-    this.config = config;
     this.totalSims = config.simulationConfig.numSims;
     this.currentSim = 0;
-    this.sendDebugMessage("Starting with config:")
-    this.sendDebugMessage(JSON.stringify(this.config));
+    console.log("Starting with config:")
+    console.log(this.config);
     this.monthlyBalances = {};
     this.abort = false;
-
     this.sendStatusMessage(true /* active */);
   }
 
   continueSimulations() {    
     // Run through 10 simulations and send a status update
     for (var i = this.currentSim; i < this.currentSim + 10 && i < this.totalSims; i++) {
-      this.sendDebugMessage('Running simulation #' + i);
+      console.log('Running simulation #' + i);
       this.runSimulation();
     }
     if (this.abort) {
@@ -27,15 +25,15 @@ class SimulationHandler {
     }
     if (i >= this.totalSims) {
       // If this is the last simulation, send the final results.
-      //this.sendDebugMessage("BALANCES");
-      //this.sendDebugMessage(JSON.stringify(this.monthlyBalances));
+      //console.log("BALANCES");
+      //console.log(JSON.stringify(this.monthlyBalances));
       this.calculateAndSendResults();
       this.sendStatusMessage(false /* active */);
       return;
     }
 
     this.currentSim = i;
-    this.sendDebugMessage("Finished 10 sims...");
+    console.log("Finished 10 sims...");
     this.sendStatusPercent(Math.round(100 * i / this.totalSims));
   }
 
@@ -161,11 +159,6 @@ class SimulationHandler {
 
   sendStatusPercent(percent) {
     postMessage({type: 'percent', percent: percent})
-
-  }
-
-  sendDebugMessage(text) {
-    console.log(text);
   }
 
   sendStatusMessage(active) {
