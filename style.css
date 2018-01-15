@@ -1,0 +1,19 @@
+.simulation-item-summary {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.simulation-timeline-container {
+  flex-grow: 1;
+  background: #eee;
+  margin: 0 1em;
+  border-left: 1px #aaa solid;
+  border-right: 1px #aaa solid;
+}
+
+.simulation-timeline-item {
+  background: #555;
+  display: block;
+  height: 100%;
+}
