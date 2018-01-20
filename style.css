@@ -1,23 +1,77 @@
-.simulation-item-summary {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+/* Body and main container */
+
+#simulations {
+  width: 95%;
+  margin: 0 auto;
+  font-family: Arial;
 }
+
+/* Individual items */
+
+.simulation-item {
+  margin: 0 1em;
+}
+
+.simulation-item.active {
+  box-shadow: 0 0 3px #000;
+  padding: 1em;
+  margin: 0.5em 0;
+}
+
+/* Timelines */
 
 .simulation-timeline-container {
-  flex-grow: 1;
   background: #eee;
-  margin: 0 1em;
   border-left: 1px #aaa solid;
   border-right: 1px #aaa solid;
+  opacity: 0.825;
+  padding: 1px 0;
+  transition: opacity 0.5s;
 }
 
-.simulation-timeline-item {
+.simulation-timeline-container:hover {
+  opacity: 1;
+  padding: 0;
+  border: 1px #aaa solid;
+  cursor: pointer;
+}
+
+.simulation-timeline {
   background: #555;
   display: block;
+  text-indent: 8px;
   height: 100%;
+  min-width: 5px;
 }
 
-.simulation-item.invalid .simulation-item-name {
+.windfall .simulation-timeline {
+  background: #00b400;
+}
+
+.loan .simulation-timeline {
+  background: #b40000;
+  color: #fff;
+}
+
+.expenditure .simulation-timeline {
+  background: #ffcc00;
+}
+
+.job .simulation-timeline {
+  background: #0000b4;
+  color: #fff;
+}
+
+.invalid .simulation-timeline {
   color: #a00;
+  background: #fee;
+}
+
+/* Active simulation items */
+
+.simulation-item-actions {
+  display: flex;
+  margin: 1em 0 0 0;
+  flex-direction: row;
+  justify-content: space-between;
 }
