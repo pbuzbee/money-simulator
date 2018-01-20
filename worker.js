@@ -5,6 +5,7 @@ class SimulationHandler {
     this.simItems = config.simulationItems;
     this.totalSims = config.simulationConfig.numSims;
     this.currentSim = 0;
+    this.initialBalance = config.simulationConfig.initialBalance;
     console.log("Starting with config:")
     console.log(this.config);
     this.monthlyBalances = {};
@@ -42,7 +43,7 @@ class SimulationHandler {
   }
 
   runSimulation() {
-    var balance = 0;
+    var balance = this.initialBalance;
 
     // Initialize all items
     var simItems = [];

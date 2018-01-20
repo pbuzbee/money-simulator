@@ -47,11 +47,9 @@ class SimulationItem extends React.Component {
   }
 
   renderTimeline() {
-    return "lol";
   }
 
   renderActiveContent() {
-
   }
 
   render() {
@@ -59,8 +57,7 @@ class SimulationItem extends React.Component {
     return (
       <div className={this.props.simulation.valid ? "simulation-item" : "simulation-item invalid"} data-item-num={this.props.num}>
         <div className="simulation-item-summary">
-          <button onClick={this.props.onActivate}>{toggleText}</button>
-          <span className="simulation-item-name">{this.props.simulation.name}</span>
+          <button onClick={this.props.onActivate} className="toggle-active">{toggleText}</button>
           <span className="simulation-timeline-container">{this.renderTimeline()}</span>
           <button onClick={this.props.onRemove}>Remove</button>
         </div>
@@ -76,7 +73,7 @@ class Loan extends SimulationItem {
     var endDate = new Date(startDate.getTime());
     endDate.setFullYear(endDate.getFullYear() + parseInt(this.props.simulation.values[1]));
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return;
+      return <span className="simulation-timeline-item">{this.props.simulation.name}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -87,7 +84,7 @@ class Loan extends SimulationItem {
       width: endDatePercent + '%'
     };
     return (
-      <span className="simulation-timeline-item" style={timelineStyle}></span>
+      <span className="simulation-timeline-item" style={timelineStyle}>{this.props.simulation.name}</span>
     )
   }
 
@@ -110,7 +107,7 @@ class Expenditure extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return;
+      return <span className="simulation-timeline-item">{this.props.simulation.name}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -121,7 +118,7 @@ class Expenditure extends SimulationItem {
       width: endDatePercent + '%'
     };
     return (
-      <span className="simulation-timeline-item" style={timelineStyle}></span>
+      <span className="simulation-timeline-item" style={timelineStyle}>{this.props.simulation.name}</span>
     )
   }
 
@@ -141,7 +138,7 @@ class Windfall extends SimulationItem {
   renderTimeline() {
     var date = new Date(this.props.simulation.values[0]);
     if (isNaN(date.getTime()) || date < this.props.simConfig.startDate || date > this.props.simConfig.endDate) {
-      return;
+      return <span className="simulation-timeline-item">{this.props.simulation.name}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(date.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -151,7 +148,7 @@ class Windfall extends SimulationItem {
       width: '3px'
     };
     return (
-      <span className="simulation-timeline-item" style={timelineStyle}></span>
+      <span className="simulation-timeline-item" style={timelineStyle}>{this.props.simulation.name}</span>
     );
   }
 
@@ -171,7 +168,7 @@ class Job extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return;
+      return <span className="simulation-timeline-item">{this.props.simulation.name}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -182,7 +179,7 @@ class Job extends SimulationItem {
       width: endDatePercent + '%'
     };
     return (
-      <span className="simulation-timeline-item" style={timelineStyle}></span>
+      <span className="simulation-timeline-item" style={timelineStyle}>{this.props.simulation.name}</span>
     )
   }
 
@@ -203,8 +200,9 @@ class SimulationManager extends React.Component {
     return (
       <div>
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
+        <p><label>Initial balance: <input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /></label></p>
         <p><label>End date: <input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /></label></p>
-        <p><label># of simulations: <input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} /></label></p>
+        <p><label># of simulations: <input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /></label></p>
       </div>
     );
   }
@@ -324,6 +322,7 @@ class SimulationContainer extends React.Component {
         endDate: endDate,
         numSims: 5,
         debug: false,
+        initialBalance: 0,
       },
       simulationStatus: {
         active: false,
@@ -426,6 +425,9 @@ class SimulationContainer extends React.Component {
       case 'numSims':
         simConfig.numSims = e.target.value;
         break;
+      case 'initialBalance':
+        simConfig.initialBalance = e.target.value;
+        break;
       case 'endDate':
         simConfig.endDate = new Date(e.target.value);
         break;
@@ -456,7 +458,7 @@ class SimulationContainer extends React.Component {
 
     return (
       <div>
-        <div>{simulationItemRows}</div>
+        <div className="simulation-item-container">{simulationItemRows}</div>
 
         <hr />
 
