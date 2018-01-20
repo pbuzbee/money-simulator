@@ -31,17 +31,15 @@ body {
 
 .simulation-timeline-container {
   background: #eee;
-  border-left: 1px #aaa solid;
-  border-right: 1px #aaa solid;
-  opacity: 0.825;
-  padding: 1px 0;
+  border-left: 1px #666 solid;
+  border-right: 1px #666 solid;
+  opacity: 0.75;
+  line-height: 2em;
   transition: opacity 0.5s;
 }
 
 .simulation-timeline-container:hover {
   opacity: 1;
-  padding: 0;
-  border: 1px #aaa solid;
   cursor: pointer;
 }
 
@@ -83,6 +81,11 @@ body {
   margin: 1em 0 0 0;
   flex-direction: row;
   justify-content: space-between;
+}
+
+input:not([type=checkbox]) {
+  width: 9em;
+  margin-right: 0.3em;
 }
 
 /* Add simulation items */

@@ -3,47 +3,34 @@ class SimulationItem extends React.Component {
   renderNameField(isDisabled) {
     return (
       <div>
-      <p>{JSON.stringify(this.props.simulation)}</p>
-      <p><label><input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={isDisabled} /> Enabled</label></p>
-      <p><label>Name: <input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} disabled={isDisabled} /></label></p>
+        <p><label><input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={isDisabled} /> Enabled</label></p>
+        <p><label><input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} disabled={isDisabled} /> Name</label></p>
       </div>
     );
   }
 
   renderDateInput(valueNum, isDisabled, labelText, min = null, max = null) {
      return (
-        <p><label>{labelText} <input type="date" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} min={min} max={max} disabled={isDisabled} required /></label></p>
+        <p><label><input type="date" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} min={min} max={max} disabled={isDisabled} required /> {labelText}</label></p>
       )
   }
 
   renderNumberInput(valueNum, isDisabled, labelText, min) {
     return (
-      <p><label>{labelText} <input type="number" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} min={min} required /></label></p>
+      <p><label><input type="number" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} min={min} required /> {labelText}</label></p>
       )
   }
 
   renderTextInput(valueNum, isDisabled, labelText) {
     return (
-      <p><label>{labelText} <input type="text" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} required /></label></p>
+      <p><label><input type="text" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} required /> {labelText}</label></p>
     )
   }
 
   renderCheckboxInput(valueNum, isDisabled, labelText) {
     return (
-      <p><label>{labelText} <input type="checkbox" name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} disabled={isDisabled} /></label></p>
+      <p><label><input type="checkbox" name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} disabled={isDisabled} /> {labelText}</label></p>
     )
-  }
-
-  renderInput(valueNum, isDisabled, labelText, inputType) {
-    if (inputType != 'checkbox') {
-      return (
-        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} disabled={isDisabled} required /></label></p>
-      )
-    } else {
-      return (
-        <p><label>{labelText} <input type={inputType} name={'value' + valueNum + '-' + this.props.num} checked={this.props.simulation.values[valueNum] == 'on'} onClick={this.props.onInputChange} disabled={isDisabled} /></label></p>
-      )
-    }
   }
 
   renderTimeline() {
@@ -105,7 +92,7 @@ class Loan extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderDateInput(0, this.props.isDisabled, 'Loan date: ', this.props.simConfig.startDate.toISOString().substring(0, 10))}
+        {this.renderDateInput(0, this.props.isDisabled, 'Loan date', this.props.simConfig.startDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(1, this.props.isDisabled, 'Loan term (# of years)', 0)}
         {this.renderTextInput(2, this.props.isDisabled, 'Interest rate (%)')}
         {this.renderNumberInput(3, this.props.isDisabled, 'Loan amount ($)', 0)}
@@ -140,8 +127,8 @@ class Expenditure extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderDateInput(0, this.props.isDisabled, 'Start date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
-        {this.renderDateInput(1, this.props.isDisabled, 'End date:', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
+        {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(2, this.props.isDisabled, 'Cost ($/month)', 0)}
         {this.renderRemoveAndCloseButtons()}
       </div>
@@ -171,8 +158,8 @@ class Windfall extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderDateInput(0, this.props.isDisabled, 'Date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
-        {this.renderNumberInput(1, this.props.isDisabled, 'Amount:', 0)}
+        {this.renderDateInput(0, this.props.isDisabled, 'Date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(1, this.props.isDisabled, 'Amount ($)', 0)}
         {this.renderRemoveAndCloseButtons()}
       </div>
     );
@@ -203,8 +190,8 @@ class Job extends SimulationItem {
     return (
       <div>
         {this.renderNameField(this.props.isDisabled)}
-        {this.renderDateInput(0, this.props.isDisabled, 'Start date:', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
-        {this.renderDateInput(1, this.props.isDisabled, 'End date:', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
+        {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(2, this.props.isDisabled, 'Salary ($/year)', 0)}
         {this.renderRemoveAndCloseButtons()}
       </div>
@@ -217,9 +204,9 @@ class SimulationManager extends React.Component {
     return (
       <div class="simulation-manager">
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
-        <p><label>Initial balance: $<input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /></label></p>
-        <p><label>End date: <input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /></label></p>
-        <p><label># of simulations: <input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /></label></p>
+        <p><label><input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /> Initial net worth ($)</label></p>
+        <p><label><input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /> End date</label></p>
+        <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
       </div>
     );
   }
