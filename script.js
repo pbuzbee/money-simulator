@@ -215,7 +215,7 @@ class Job extends SimulationItem {
 class SimulationManager extends React.Component {
   render() {
     return (
-      <div>
+      <div class="simulation-manager">
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
         <p><label>Initial balance: $<input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /></label></p>
         <p><label>End date: <input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /></label></p>
@@ -477,14 +477,12 @@ class SimulationContainer extends React.Component {
       <div>
         <div className="simulation-item-container">{simulationItemRows}</div>
 
-        <hr />
-
-        <button onClick={() => this.addNewItem('loan')}>Add Loan</button>
-        <button onClick={() => this.addNewItem('windfall')}>Add Windfall</button>
-        <button onClick={() => this.addNewItem('job')}>Add Job</button>
-        <button onClick={() => this.addNewItem('expenditure')}>Add Expenditure</button>
-
-        <hr />
+        <p className="simulation-add-item">
+          <button onClick={() => this.addNewItem('loan')}>Add Loan</button>
+          <button onClick={() => this.addNewItem('windfall')}>Add Windfall</button>
+          <button onClick={() => this.addNewItem('job')}>Add Job</button>
+          <button onClick={() => this.addNewItem('expenditure')}>Add Expenditure</button>
+        </p>
 
         <SimulationManager onStart={() => this.startOrStopSimulations()} onChange={this.handleConfigChange.bind(this)} config={this.state.simulationConfig} status={this.state.simulationStatus}  />
 

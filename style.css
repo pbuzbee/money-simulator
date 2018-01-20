@@ -1,8 +1,17 @@
 /* Body and main container */
 
+body {
+  margin: 0;
+  background: #f2f2f2;
+  height: 100%;
+}
+
 #simulations {
   width: 95%;
+  background: #fff;
+  min-height: 100%;
   margin: 0 auto;
+  padding: 1em;
   font-family: Arial;
 }
 
@@ -74,4 +83,19 @@
   margin: 1em 0 0 0;
   flex-direction: row;
   justify-content: space-between;
+}
+
+/* Add simulation items */
+
+.simulation-add-item {
+  padding: 1em 0;
+  text-align: center;
+}
+
+/* Simulation manager */
+
+.simulation-manager {
+  margin: 1em 0;
+  padding: 1em 0;
+  border-top: 1px #aaa solid;
 }
