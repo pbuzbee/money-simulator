@@ -50,14 +50,20 @@ class SimulationHandler {
     for (var simItem of this.simItems) {
       if (!simItem.enabled || !simItem.valid) continue;
       switch (simItem.simType) {
-        case 'windfall':
-          simItems.push(new Windfall(simItem.values[0], simItem.values[1]));
+        case 'one-time income':
+          simItems.push(new OneTimeChange(simItem.values[0], simItem.values[1]));
+          break;
+        case 'one-time expense':
+          simItems.push(new OneTimeChange(simItem.values[0], -1*simItem.values[1]));
           break;
         case 'job':
           simItems.push(new Job(simItem.values[0], simItem.values[1], simItem.values[2]));
           break;
-        case 'expenditure':
-          simItems.push(new Expenditure(simItem.values[0], simItem.values[1], simItem.values[2]));
+        case 'recurring expense':
+          simItems.push(new RecurringChange(simItem.values[0], simItem.values[1], simItem.values[2]));
+          break;
+        case 'recurring income':
+          simItems.push(new RecurringChange(simItem.values[0], simItem.values[1], -1*simItem.values[2]));
           break;
         case 'loan':
           simItems.push(new Loan(simItem.values[0], simItem.values[1], simItem.values[2], simItem.values[3]));
@@ -168,7 +174,7 @@ class SimulationHandler {
 }
 
 
-class Windfall {
+class OneTimeChange {
   constructor(date, amount) {
     // Adjust initial amount by +/- 10%
     this.amount = parseInt(amount) + getRandomNormalDist(0, 0.1*parseInt(amount));
@@ -190,7 +196,6 @@ class Job {
     // Adjust initial salary by +/- 20%
     salary = parseInt(salary) + getRandomNormalDist(0, 0.2*parseInt(salary));
     this.monthlySalary = salary / 12;
-    this.taxRate = 0.33;
   }
 
   advanceMonth(currentDate) {
@@ -200,26 +205,26 @@ class Job {
       this.monthlySalary = this.monthlySalary * getRandomNormalDist(1.04, 0.06);
       postMessage("new salary: " + this.monthlySalary);
     }
-    return this.monthlySalary * (1 - this.taxRate);
+    var taxRate = getRandomNormalDist(0.33, 0.13);
+    return this.monthlySalary * (1 - taxRate);
   }
 }
 
-class Expenditure {
-  constructor(startDate, endDate, monthlyCost) {
+class RecurringChange {
+  constructor(startDate, endDate, monthlyAmt) {
     this.startDate = new Date(startDate);
     this.endDate = new Date(endDate);
-    // vary initial monthly cost by +/- 10%
-    this.monthlyCost = (-1 * parseInt(monthlyCost)) * getRandomNormalDist(1, 0.1);
-    this.annualGrowth = 1.02;
+    // vary initial monthly amount by +/- 10%
+    this.monthlyAmt = (-1 * parseInt(monthlyAmt)) * getRandomNormalDist(1, 0.1);
   }
 
   advanceMonth(currentDate) {
     if (currentDate < this.startDate || currentDate > this.endDate) return 0;
     if (currentDate.getMonth() == 0) {
-      // Once a year, increase cost by 0 - 10% (accounting for inflation)
-      this.monthlyCost = this.monthlyCost * getRandomNormalDist(1.05, 0.05);
+      // Once a year, increase cost by -1 - 9% (accounting for inflation)
+      this.monthlyAmt = this.monthlyAmt * getRandomNormalDist(1.04, 0.05);
     }
-    return this.monthlyCost;
+    return this.monthlyAmt;
   }
 }
 

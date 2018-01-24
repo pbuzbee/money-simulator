@@ -49,23 +49,19 @@ body {
   text-indent: 8px;
   height: 100%;
   min-width: 5px;
+  white-space: nowrap;
 }
 
-.windfall .simulation-timeline {
-  background: #00b400;
-}
-
-.loan .simulation-timeline {
-  background: #b40000;
-  color: #fff;
-}
-
-.expenditure .simulation-timeline {
+.loan .simulation-timeline,
+.recurring-expense .simulation-timeline,
+.one-time-expense .simulation-timeline {
   background: #ffcc00;
 }
 
-.job .simulation-timeline {
-  background: #0000b4;
+.job .simulation-timeline,
+.recurring-income .simulation-timeline,
+.one-time-income .simulation-timeline {
+  background: #00b400;
   color: #fff;
 }
 

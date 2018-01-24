@@ -52,15 +52,15 @@ class SimulationItem extends React.Component {
     var toggleText = this.props.isActive ? 'Close' : 'Open';
     var classAttr = 'simulation-item';
     if (this.props.simulation.valid) {
-      classAttr += ' ' + this.props.simulation.simType;
+      classAttr += ' ' + this.props.simulation.simType.replace(' ', '-');
     } else {
       classAttr += ' invalid';
     }
     if (this.props.isActive) classAttr += ' active';
     return (
       <div className={classAttr} data-item-num={this.props.num}>
-          <div onClick={this.props.onActivate} className="simulation-timeline-container">{this.renderTimeline()}</div>
-          
+        {this.props.isActive ? <p>{this.props.simulation.simType.charAt(0).toUpperCase() + this.props.simulation.simType.slice(1)}</p> : null}
+          <div onClick={this.props.onActivate} className="simulation-timeline-container">{this.renderTimeline()}</div>          
         {this.props.isActive ? this.renderActiveContent() : null}
       </div>
     );
@@ -103,7 +103,7 @@ class Loan extends SimulationItem {
   }
 }
 
-class Expenditure extends SimulationItem {
+class RecurringExpense extends SimulationItem {
   renderTimeline() {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
@@ -136,7 +136,70 @@ class Expenditure extends SimulationItem {
   }
 }
 
-class Windfall extends SimulationItem {
+class RecurringIncome extends SimulationItem {
+  renderTimeline() {
+    var startDate = new Date(this.props.simulation.values[0]);
+    var endDate = new Date(this.props.simulation.values[1]);
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+    }
+    var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
+    var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
+    var endDatePercent = 100*(endDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds - startDatePercent;
+
+    var timelineStyle = {
+      marginLeft: startDatePercent + '%',
+      width: endDatePercent + '%'
+    };
+    return (
+      <span className="simulation-timeline" style={timelineStyle}>{this.props.simulation.name}</span>
+    )
+  }
+
+  renderActiveContent() {
+    return (
+      <div>
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
+        {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(2, this.props.isDisabled, 'Amount ($/month)', 0)}
+        {this.renderRemoveAndCloseButtons()}
+      </div>
+    );
+  }
+}
+
+class OneTimeIncome extends SimulationItem {
+  renderTimeline() {
+    var date = new Date(this.props.simulation.values[0]);
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+    }
+    var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
+    var startDatePercent = 100*(date.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
+
+    var timelineStyle = {
+      marginLeft: startDatePercent + '%',
+      width: '3px'
+    };
+    return (
+      <span className="simulation-timeline" style={timelineStyle}>{this.props.simulation.name}</span>
+    );
+  }
+
+  renderActiveContent() {
+    return (
+      <div>
+        {this.renderNameField(this.props.isDisabled)}
+        {this.renderDateInput(0, this.props.isDisabled, 'Date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
+        {this.renderNumberInput(1, this.props.isDisabled, 'Amount ($)', 0)}
+        {this.renderRemoveAndCloseButtons()}
+      </div>
+    );
+  }
+}
+
+class OneTimeExpense extends SimulationItem {
   renderTimeline() {
     var date = new Date(this.props.simulation.values[0]);
     if (!this.props.simulation.valid) {
@@ -192,7 +255,7 @@ class Job extends SimulationItem {
         {this.renderNameField(this.props.isDisabled)}
         {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
         {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
-        {this.renderNumberInput(2, this.props.isDisabled, 'Salary ($/year)', 0)}
+        {this.renderNumberInput(2, this.props.isDisabled, 'Salary ($/year, pre-tax)', 0)}
         {this.renderRemoveAndCloseButtons()}
       </div>
     );
@@ -447,10 +510,14 @@ class SimulationContainer extends React.Component {
     switch (simItem.simType) {
       case 'loan':
         return <Loan key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
-      case 'windfall':
-        return <Windfall key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
-      case 'expenditure':
-        return <Expenditure key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+      case 'one-time income':
+        return <OneTimeIncome key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+      case 'recurring income':
+        return <RecurringIncome key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+      case 'recurring expense':
+        return <RecurringExpense key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
+      case 'one-time expense':
+        return <OneTimeExpense key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
       case 'job':
         return <Job key={i} num={i} simulation={simItem} isDisabled={this.state.simulationStatus.active} simConfig={this.state.simulationConfig} isActive={isActive} onInputChange={this.handleItemChange.bind(this)} onActivate={() => this.toggleActiveItem(i)} onRemove={() => this.removeItem(i)} />;
     }
@@ -475,10 +542,13 @@ class SimulationContainer extends React.Component {
         <h2>3. Simulate life events</h2>
         <p>Add financial events in your life that you want to simulate.</p>
         <p className="simulation-add-item">
-          <button onClick={() => this.addNewItem('loan')}>Add Loan</button>
-          <button onClick={() => this.addNewItem('windfall')}>Add Windfall</button>
-          <button onClick={() => this.addNewItem('job')}>Add Job</button>
-          <button onClick={() => this.addNewItem('expenditure')}>Add Expenditure</button>
+        
+          <button onClick={() => this.addNewItem('job')}>Add job</button>
+          <button onClick={() => this.addNewItem('one-time income')}>Add one-time income</button>
+          <button onClick={() => this.addNewItem('recurring income')}>Add recurring income</button>
+          <button onClick={() => this.addNewItem('one-time expense')}>Add one-time expense</button>
+          <button onClick={() => this.addNewItem('recurring expense')}>Add recurring expense</button>          
+          <button onClick={() => this.addNewItem('loan')}>Add loan</button>
         </p>
         <div className="simulation-item-container">{simulationItemRows}</div>
 
