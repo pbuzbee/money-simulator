@@ -72,8 +72,8 @@ class Loan extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(startDate.getTime());
     endDate.setFullYear(endDate.getFullYear() + parseInt(this.props.simulation.values[1]));
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return <span className="simulation-timeline">{this.props.simulation.name}</span>;
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -107,8 +107,8 @@ class Expenditure extends SimulationItem {
   renderTimeline() {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return <span className="simulation-timeline">{this.props.simulation.name}</span>;
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -139,8 +139,8 @@ class Expenditure extends SimulationItem {
 class Windfall extends SimulationItem {
   renderTimeline() {
     var date = new Date(this.props.simulation.values[0]);
-    if (isNaN(date.getTime()) || date < this.props.simConfig.startDate || date > this.props.simConfig.endDate) {
-      return <span className="simulation-timeline">{this.props.simulation.name}</span>;
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(date.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -170,8 +170,8 @@ class Job extends SimulationItem {
   renderTimeline() {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate || startDate < this.props.simConfig.startDate || endDate > this.props.simConfig.endDate) {
-      return <span className="simulation-timeline">{this.props.simulation.name}</span>;
+    if (!this.props.simulation.valid) {
+      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -203,10 +203,11 @@ class SimulationManager extends React.Component {
   render() {
     return (
       <div class="simulation-manager">
-        <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
+        <h2>Simulation config</h2>
         <p><label><input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /> Initial net worth ($)</label></p>
         <p><label><input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /> End date</label></p>
         <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
+        <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
       </div>
     );
   }
@@ -304,8 +305,11 @@ class SimulationResults extends React.Component {
 
   render() {
     return (
-      <div id='chart-container' style={{height: '400px'}}>
-        <canvas id="chart-canvas"></canvas>
+      <div>
+        <h2>Results</h2>
+        <div id='chart-container' style={{height: '400px'}}>
+          <canvas id="chart-canvas"></canvas>
+        </div>
       </div>
     );
 
@@ -462,14 +466,18 @@ class SimulationContainer extends React.Component {
 
     return (
       <div>
-        <div className="simulation-item-container">{simulationItemRows}</div>
+        <h1>Net worth simulator</h1>
 
+        <h2>Simulated items</h2>
         <p className="simulation-add-item">
           <button onClick={() => this.addNewItem('loan')}>Add Loan</button>
           <button onClick={() => this.addNewItem('windfall')}>Add Windfall</button>
           <button onClick={() => this.addNewItem('job')}>Add Job</button>
           <button onClick={() => this.addNewItem('expenditure')}>Add Expenditure</button>
         </p>
+        <div className="simulation-item-container">{simulationItemRows}</div>
+
+
 
         <SimulationManager onStart={() => this.startOrStopSimulations()} onChange={this.handleConfigChange.bind(this)} config={this.state.simulationConfig} status={this.state.simulationStatus}  />
 
