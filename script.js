@@ -41,7 +41,7 @@ class SimulationItem extends React.Component {
 
   renderRemoveAndCloseButtons() {
     return (
-      <p class="simulation-item-actions">
+      <p className="simulation-item-actions">
         <button onClick={this.props.onActivate}>Close</button>
         <button onClick={this.props.onRemove}>Remove</button>
       </p>
@@ -202,10 +202,8 @@ class Job extends SimulationItem {
 class SimulationManager extends React.Component {
   render() {
     return (
-      <div class="simulation-manager">
+      <div className="simulation-manager">
         <h2>Simulation config</h2>
-        <p><label><input type="number" name="initialBalance" onChange={this.props.onChange} value={this.props.config.initialBalance} /> Initial net worth ($)</label></p>
-        <p><label><input type="date" name="endDate" onChange={this.props.onChange} value={this.props.config.endDate.toISOString().substring(0,10)} /> End date</label></p>
         <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
       </div>
@@ -460,7 +458,7 @@ class SimulationContainer extends React.Component {
 
   render() {
     var simulationItemRows = [];
-    for (var i = 0; i < this.state.simulationItems.length; i++) {
+    for (var i = this.state.simulationItems.length - 1; i >= 0; i--) {
       simulationItemRows.push(this.renderSimulationItem(i));
     }
 
@@ -468,7 +466,14 @@ class SimulationContainer extends React.Component {
       <div>
         <h1>Net worth simulator</h1>
 
-        <h2>Simulated items</h2>
+        <h2>1. Enter your current net worth</h2>
+        <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
+
+        <h2>2. How far do you want to simulate?</h2>
+        <p><label><input type="date" name="endDate" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.endDate.toISOString().substring(0,10)} /> End date</label></p>
+
+        <h2>3. Simulate life events</h2>
+        <p>Add financial events in your life that you want to simulate.</p>
         <p className="simulation-add-item">
           <button onClick={() => this.addNewItem('loan')}>Add Loan</button>
           <button onClick={() => this.addNewItem('windfall')}>Add Windfall</button>
@@ -476,8 +481,6 @@ class SimulationContainer extends React.Component {
           <button onClick={() => this.addNewItem('expenditure')}>Add Expenditure</button>
         </p>
         <div className="simulation-item-container">{simulationItemRows}</div>
-
-
 
         <SimulationManager onStart={() => this.startOrStopSimulations()} onChange={this.handleConfigChange.bind(this)} config={this.state.simulationConfig} status={this.state.simulationStatus}  />
 
