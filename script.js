@@ -1,11 +1,8 @@
 class SimulationItem extends React.Component {
 
   renderNameField(isDisabled) {
-    return (
-      <div>
-        <p><label><input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={isDisabled} /> Enabled</label></p>
-        <p><label><input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} disabled={isDisabled} /> Name</label></p>
-      </div>
+    return (  
+        <p><label><strong>{this.props.simulation.simType.charAt(0).toUpperCase() + this.props.simulation.simType.slice(1)} name:</strong> <input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} placeholder="Name" disabled={isDisabled} required /></label></p>
     );
   }
 
@@ -13,6 +10,12 @@ class SimulationItem extends React.Component {
      return (
         <p><label><input type="date" name={'value' + valueNum + '-' + this.props.num} value={this.props.simulation.values[valueNum]} onChange={this.props.onInputChange} min={min} max={max} disabled={isDisabled} required /> {labelText}</label></p>
       )
+  }
+
+  renderInvalidTimeline() {
+    var timelineText = this.props.isActive ? 'Fill in all fields correctly to view a timeline for this item.' : 'Incomplete ' + this.props.simulation.simType;
+    
+     return <span className="simulation-timeline">{timelineText}</span>;
   }
 
   renderNumberInput(valueNum, isDisabled, labelText, min) {
@@ -39,29 +42,29 @@ class SimulationItem extends React.Component {
   renderActiveContent() {
   }
 
-  renderRemoveAndCloseButtons() {
+  renderEnabledToggleAndRemoveAndCloseButtons() {
     return (
-      <p className="simulation-item-actions">
-        <button onClick={this.props.onActivate}>Close</button>
-        <button onClick={this.props.onRemove}>Remove</button>
-      </p>
+      <div>
+        <p><label> <input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={this.props.isDisabled} /> Enabled</label></p>
+        <p className="simulation-item-actions">
+          <button onClick={this.props.onActivate}>Close</button>
+          <button onClick={this.props.onRemove}>Remove</button>
+        </p>
+      </div>
     );
   }
 
   render() {
     var toggleText = this.props.isActive ? 'Close' : 'Open';
     var classAttr = 'simulation-item';
-    if (this.props.simulation.valid) {
-      classAttr += ' ' + this.props.simulation.simType.replace(' ', '-');
-    } else {
-      classAttr += ' invalid';
-    }
-    if (this.props.isActive) classAttr += ' active';
+    classAttr += this.props.simulation.valid ? ' ' + this.props.simulation.simType.replace(' ', '-') : ' invalid';
+    classAttr += this.props.isActive ? ' active' : ' inactive';
+    classAttr += this.props.simulation.enabled ? '' : ' disabled';
     return (
-      <div className={classAttr} data-item-num={this.props.num}>
-        {this.props.isActive ? <p>{this.props.simulation.simType.charAt(0).toUpperCase() + this.props.simulation.simType.slice(1)}</p> : null}
-          <div onClick={this.props.onActivate} className="simulation-timeline-container">{this.renderTimeline()}</div>          
-        {this.props.isActive ? this.renderActiveContent() : null}
+      <div className={classAttr} data-item-num={this.props.num}>    
+              <div onClick={!this.props.isActive ? this.props.onActivate : null} className="simulation-timeline-container">{this.renderTimeline()}</div>    
+        {this.props.isActive ? this.renderActiveContent() : null}        
+
       </div>
     );
   }
@@ -73,7 +76,7 @@ class Loan extends SimulationItem {
     var endDate = new Date(startDate.getTime());
     endDate.setFullYear(endDate.getFullYear() + parseInt(this.props.simulation.values[1]));
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -97,7 +100,7 @@ class Loan extends SimulationItem {
         {this.renderTextInput(2, this.props.isDisabled, 'Interest rate (%)')}
         {this.renderNumberInput(3, this.props.isDisabled, 'Loan amount ($)', 0)}
         {this.renderTextInput(4, this.props.isDisabled, 'Monthly payment ($/month)')}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -108,7 +111,7 @@ class RecurringExpense extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -130,7 +133,7 @@ class RecurringExpense extends SimulationItem {
         {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
         {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(2, this.props.isDisabled, 'Cost ($/month)', 0)}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -141,7 +144,7 @@ class RecurringIncome extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -163,7 +166,7 @@ class RecurringIncome extends SimulationItem {
         {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
         {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(2, this.props.isDisabled, 'Amount ($/month)', 0)}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -173,7 +176,7 @@ class OneTimeIncome extends SimulationItem {
   renderTimeline() {
     var date = new Date(this.props.simulation.values[0]);
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(date.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -193,7 +196,7 @@ class OneTimeIncome extends SimulationItem {
         {this.renderNameField(this.props.isDisabled)}
         {this.renderDateInput(0, this.props.isDisabled, 'Date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(1, this.props.isDisabled, 'Amount ($)', 0)}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -203,7 +206,7 @@ class OneTimeExpense extends SimulationItem {
   renderTimeline() {
     var date = new Date(this.props.simulation.values[0]);
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(date.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -223,7 +226,7 @@ class OneTimeExpense extends SimulationItem {
         {this.renderNameField(this.props.isDisabled)}
         {this.renderDateInput(0, this.props.isDisabled, 'Date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(1, this.props.isDisabled, 'Amount ($)', 0)}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -234,7 +237,7 @@ class Job extends SimulationItem {
     var startDate = new Date(this.props.simulation.values[0]);
     var endDate = new Date(this.props.simulation.values[1]);
     if (!this.props.simulation.valid) {
-      return <span className="simulation-timeline">{this.props.simulation.name + ' - Incomplete setup'}</span>;
+      return this.renderInvalidTimeline();
     }
     var totalSeconds = this.props.simConfig.endDate.valueOf() - this.props.simConfig.startDate.valueOf();
     var startDatePercent = 100*(startDate.valueOf() - this.props.simConfig.startDate.valueOf()) / totalSeconds;
@@ -256,7 +259,7 @@ class Job extends SimulationItem {
         {this.renderDateInput(0, this.props.isDisabled, 'Start date', this.props.simConfig.startDate.toISOString().substring(0, 10), this.props.simulation.values[1])}
         {this.renderDateInput(1, this.props.isDisabled, 'End date', this.props.simulation.values[0], this.props.simConfig.endDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(2, this.props.isDisabled, 'Salary ($/year, pre-tax)', 0)}
-        {this.renderRemoveAndCloseButtons()}
+        {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
   }
@@ -412,7 +415,7 @@ class SimulationContainer extends React.Component {
       enabled: true,
       valid: false,
       errorMessage: '',
-      name: simType.charAt(0).toUpperCase() + simType.slice(1),
+      name: '',
       values: ['', '', '', '', '']
     })
     this.setState({simulationItems: simulationItems, activeItem: (simulationItems.length - 1)});

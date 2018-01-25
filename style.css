@@ -38,6 +38,12 @@ body {
   transition: opacity 0.5s;
 }
 
+.active .simulation-timeline-container {
+  line-height: 4em;
+  cursor: default;
+  opacity: 1;
+}
+
 .simulation-timeline-container:hover {
   opacity: 1;
   cursor: pointer;
@@ -45,6 +51,7 @@ body {
 
 .simulation-timeline {
   background: #555;
+  color: #fff;
   display: block;
   text-indent: 8px;
   height: 100%;
@@ -65,9 +72,17 @@ body {
   color: #fff;
 }
 
-.invalid .simulation-timeline {
+.one-time-income .simulation-timeline {
+  color: #000;
+}
+
+.invalid.inactive .simulation-timeline {
   color: #a00;
   background: #fee;
+}
+
+.disabled .simulation-timeline {
+  opacity: 0.5;
 }
 
 /* Active simulation items */
