@@ -2,7 +2,7 @@ class SimulationItem extends React.Component {
 
   renderNameField(isDisabled) {
     return (  
-        <p><label><strong>{this.props.simulation.simType.charAt(0).toUpperCase() + this.props.simulation.simType.slice(1)} name:</strong> <input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} placeholder="Name" disabled={isDisabled} required /></label></p>
+        <p><label><input type="text" name={'name-' + this.props.num} value={this.props.simulation.name} onChange={this.props.onInputChange} placeholder="Name" disabled={isDisabled} required /> Name</label></p>
     );
   }
 
@@ -14,7 +14,7 @@ class SimulationItem extends React.Component {
 
   renderInvalidTimeline() {
     var timelineText = this.props.isActive ? 'Fill in all fields correctly to view a timeline for this item.' : 'Incomplete ' + this.props.simulation.simType;
-    
+
      return <span className="simulation-timeline">{timelineText}</span>;
   }
 
@@ -61,7 +61,8 @@ class SimulationItem extends React.Component {
     classAttr += this.props.isActive ? ' active' : ' inactive';
     classAttr += this.props.simulation.enabled ? '' : ' disabled';
     return (
-      <div className={classAttr} data-item-num={this.props.num}>    
+      <div className={classAttr} data-item-num={this.props.num}> 
+        {this.props.isActive ? <h3>{this.props.simulation.simType.charAt(0).toUpperCase() + this.props.simulation.simType.slice(1)}</h3> : null}   
               <div onClick={!this.props.isActive ? this.props.onActivate : null} className="simulation-timeline-container">{this.renderTimeline()}</div>    
         {this.props.isActive ? this.renderActiveContent() : null}        
 

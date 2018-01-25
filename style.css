@@ -15,24 +15,27 @@ body {
   padding: 1em;
 }
 
-/* Individual items */
-
-.simulation-item {
-  margin: 0 1em;
+.simulation-item-container {
+  margin: 1em;
+  border: 1px #999 solid;
+  border-width: 1px 2px;
 }
+
+/* Individual items */
 
 .simulation-item.active {
   box-shadow: 0 0 3px #000;
-  padding: 1em;
-  margin: 0.5em 0;
+  padding: 0.6em;
+  box-sizing: content-box;
+  width: 100%;
+  margin-left: -0.6em;
+  background: #fff;
 }
 
 /* Timelines */
 
 .simulation-timeline-container {
   background: #eee;
-  border-left: 2px #999 solid;
-  border-right: 2px #999 solid;
   opacity: 0.75;
   line-height: 2em;
   transition: opacity 0.5s;
@@ -40,11 +43,10 @@ body {
 
 .active .simulation-timeline-container {
   line-height: 4em;
-  cursor: default;
   opacity: 1;
 }
 
-.simulation-timeline-container:hover {
+.inactive .simulation-timeline-container:hover {
   opacity: 1;
   cursor: pointer;
 }
@@ -87,6 +89,10 @@ body {
 
 /* Active simulation items */
 
+.simulation-item p {
+    margin: 0.8em;
+}
+
 .simulation-item-actions {
   display: flex;
   margin: 1em 0 0 0;
@@ -117,11 +123,14 @@ input:not([type=checkbox]) {
 
 button {
   border-radius: 3px;
-  margin: 0.5em 1em;
   padding: 0.3em 2em;
   opacity: 0.8;
   transition: opacity 0.5s;
   border: 1px #aaa solid;
+}
+
+button + button {
+  margin-left: 1em;
 }
 
 button:hover {
