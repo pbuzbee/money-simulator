@@ -15,7 +15,7 @@ class SimulationItem extends React.Component {
   renderInvalidTimeline() {
     var timelineText = this.props.isActive ? 'Fill in all fields correctly to view a timeline for this item.' : 'Incomplete ' + this.props.simulation.simType;
 
-     return <span className="simulation-timeline">{timelineText}</span>;
+     return <span className="simulation-timeline"><span className="timeline-tag">Incomplete</span>{timelineText}</span>;
   }
 
   renderNumberInput(valueNum, isDisabled, labelText, min) {
@@ -270,7 +270,7 @@ class SimulationManager extends React.Component {
   render() {
     return (
       <div className="simulation-manager">
-        <h2>Simulation config</h2>
+        <h2>4. Run simulations</h2>
         <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
         <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
       </div>

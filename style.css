@@ -21,6 +21,10 @@ body {
   border-width: 1px 2px;
 }
 
+.simulation-item-container:empty {
+  display: none;
+}
+
 /* Individual items */
 
 .simulation-item.active {
@@ -59,6 +63,21 @@ body {
   height: 100%;
   min-width: 5px;
   white-space: nowrap;
+}
+
+.active .timeline-tag {
+  display: none;
+}
+
+.timeline-tag {
+  text-transform: uppercase;
+  font-size: 80%;
+  font-weight: bold;
+  padding: 0.4em 1em;
+  border-radius: 4px;
+  background: #ee5555;
+  color: #fff;
+  margin-right: 1em;
 }
 
 .loan .simulation-timeline,
@@ -115,8 +134,6 @@ input:not([type=checkbox]) {
 
 .simulation-manager {
   margin: 1em 0;
-  padding: 1em 0;
-  border-top: 1px #aaa solid;
 }
 
 /* Form inputs */
