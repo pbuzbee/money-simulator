@@ -386,7 +386,9 @@ class SimulationContainer extends React.Component {
   constructor(props) {
     super(props);
     var endDate = new Date();
-    endDate.setDate(endDate.getDate() + 10*365);
+    endDate.setFullYear(endDate.getFullYear() + 30);
+    endDate.setMonth(11);
+    endDate.setDate(31);
     this.state = {
       simulationItems: [],
       activeItem: -1,
@@ -501,8 +503,12 @@ class SimulationContainer extends React.Component {
       case 'initialBalance':
         simConfig.initialBalance = e.target.value;
         break;
-      case 'endDate':
-        simConfig.endDate = new Date(e.target.value);
+      case 'endYear':
+        simConfig.endDate.setFullYear(e.target.value);
+        break;
+      case 'numYears':
+        var newYear = (new Date()).getFullYear() + parseInt(e.target.value);
+        simConfig.endDate.setFullYear(newYear);
         break;
     }
     this.setState({simulationConfig: simConfig});
@@ -533,6 +539,8 @@ class SimulationContainer extends React.Component {
       simulationItemRows.push(this.renderSimulationItem(i));
     }
 
+    var numYears = this.state.simulationConfig.endDate.getFullYear() - (new Date()).getFullYear();
+
     return (
       <div>
         <h1>Net worth simulator</h1>
@@ -541,7 +549,10 @@ class SimulationContainer extends React.Component {
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
 
         <h2>2. How far do you want to simulate?</h2>
-        <p><label><input type="date" name="endDate" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.endDate.toISOString().substring(0,10)} /> End date</label></p>
+        <p>
+          <label><input type="number" min={(new Date()).getFullYear() + 1} name="endYear" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.endDate.getFullYear()} /> End year</label>
+          <strong>OR</strong><br />
+          <label><input name="numYears" onChange={this.handleConfigChange.bind(this)} value={numYears} type="number" min="1" /> Number of years in the future</label></p>
 
         <h2>3. Simulate life events</h2>
         <p>Add financial events in your life that you want to simulate.</p>
