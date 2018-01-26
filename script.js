@@ -47,8 +47,8 @@ class SimulationItem extends React.Component {
       <div>
         <p><label> <input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={this.props.isDisabled} /> Enabled</label></p>
         <p className="simulation-item-actions">
-          <button onClick={this.props.onActivate}>Close</button>
-          <button onClick={this.props.onRemove}>Remove</button>
+          <button className="gray" onClick={this.props.onActivate}><i class="material-icons">close</i> Close</button>
+          <button className="red" onClick={this.props.onRemove}><i class="material-icons">delete</i> Remove</button>
         </p>
       </div>
     );
@@ -272,7 +272,7 @@ class SimulationManager extends React.Component {
       <div className="simulation-manager">
         <h2>4. Run simulations</h2>
         <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
-        <p><button onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
+        <p><button className="blue" onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
       </div>
     );
   }
@@ -558,12 +558,12 @@ class SimulationContainer extends React.Component {
         <p>Add financial events in your life that you want to simulate.</p>
         <p className="simulation-add-item">
         
-          <button onClick={() => this.addNewItem('job')}>Add job</button>
-          <button onClick={() => this.addNewItem('one-time income')}>Add one-time income</button>
-          <button onClick={() => this.addNewItem('recurring income')}>Add recurring income</button>
-          <button onClick={() => this.addNewItem('one-time expense')}>Add one-time expense</button>
-          <button onClick={() => this.addNewItem('recurring expense')}>Add recurring expense</button>          
-          <button onClick={() => this.addNewItem('loan')}>Add loan</button>
+          <button className="green" onClick={() => this.addNewItem('job')}><i class="material-icons">business</i> Add job</button>
+          <button className="green" onClick={() => this.addNewItem('one-time income')}><i class="material-icons">attach_money</i> Add one-time income</button>
+          <button className="green" onClick={() => this.addNewItem('recurring income')}><i class="material-icons">cached</i> Add recurring income</button>
+          <button className="red" onClick={() => this.addNewItem('one-time expense')}><i class="material-icons">shopping_cart</i> Add one-time expense</button>
+          <button className="red" onClick={() => this.addNewItem('recurring expense')}><i class="material-icons">payment</i> Add recurring expense</button>          
+          <button className="red" onClick={() => this.addNewItem('loan')}><i class="material-icons">work</i> Add loan</button>
         </p>
         <div className="simulation-item-container">{simulationItemRows}</div>
 

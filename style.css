@@ -119,11 +119,6 @@ body {
   justify-content: space-between;
 }
 
-input:not([type=checkbox]) {
-  width: 9em;
-  margin-right: 0.3em;
-}
-
 /* Add simulation items */
 
 .simulation-add-item {
@@ -139,11 +134,37 @@ input:not([type=checkbox]) {
 /* Form inputs */
 
 button {
-  border-radius: 3px;
-  padding: 0.3em 2em;
+  border-radius: 4px;
+  padding: 0.5em 1em;
   opacity: 0.8;
   transition: opacity 0.5s;
-  border: 1px #aaa solid;
+  border: 1px transparent solid;
+  line-height: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: #555;
+}
+
+button.green {
+  background: #33691e;
+}
+
+button.gray {
+  background: #ccc;
+  color: #000;
+}
+
+button.red {
+  background: #c62828;
+}
+
+button.blue {
+  background: #0d47a1;
+}
+
+button .material-icons {
+  vertical-align: top;
+  margin-right: 0.1em;
 }
 
 button + button {
@@ -153,5 +174,10 @@ button + button {
 button:hover {
   cursor: pointer;
   opacity: 1;
+}
 
+input:not([type=checkbox]) {
+  width: 9em;
+  margin-right: 0.3em;
+  font-size: 15px;
 }
