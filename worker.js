@@ -5,9 +5,9 @@ class SimulationHandler {
     this.simItems = config.simulationItems;
     this.totalSims = config.simulationConfig.numSims;
     this.currentSim = 0;
-    this.initialBalance = config.simulationConfig.initialBalance;
+    this.initialBalance = parseInt(config.simulationConfig.initialBalance);
     console.log("Starting with config:")
-    console.log(this.config);
+    console.log(config);
     this.monthlyBalances = {};
     this.abort = false;
     this.sendStatusMessage(true /* active */);

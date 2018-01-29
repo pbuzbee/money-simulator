@@ -47,8 +47,8 @@ class SimulationItem extends React.Component {
       <div>
         <p><label> <input type="checkbox" name={'enabled-' + this.props.num} checked={this.props.simulation.enabled} onChange={this.props.onInputChange} disabled={this.props.isDisabled} /> Enabled</label></p>
         <p className="simulation-item-actions">
-          <button className="gray" onClick={this.props.onActivate}><i class="material-icons">close</i> Close</button>
-          <button className="red" onClick={this.props.onRemove}><i class="material-icons">delete</i> Remove</button>
+          <button className="gray" onClick={this.props.onActivate}><i className="material-icons">close</i> Close</button>
+          <button className="red" onClick={this.props.onRemove}><i className="material-icons">delete</i> Remove</button>
         </p>
       </div>
     );
@@ -370,7 +370,7 @@ class SimulationResults extends React.Component {
 
   render() {
     return (
-      <div class="results">
+      <div className="results">
         <h2>Simulation results</h2>
         <div id='chart-container' style={{height: '400px'}}>
           <canvas id="chart-canvas"></canvas>
@@ -542,7 +542,7 @@ class SimulationContainer extends React.Component {
     var numYears = this.state.simulationConfig.endDate.getFullYear() - (new Date()).getFullYear();
 
     return (
-      <article class="row">
+      <article className="row">
 
         <h2>1. Enter your current net worth</h2>
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
@@ -557,12 +557,12 @@ class SimulationContainer extends React.Component {
         <p>Add financial events in your life that you want to simulate.</p>
         <p className="simulation-add-item">
         
-          <button className="green" onClick={() => this.addNewItem('job')}><i class="material-icons">business</i> Add job</button>
-          <button className="green" onClick={() => this.addNewItem('one-time income')}><i class="material-icons">attach_money</i> Add one-time income</button>
-          <button className="green" onClick={() => this.addNewItem('recurring income')}><i class="material-icons">cached</i> Add recurring income</button>
-          <button className="red" onClick={() => this.addNewItem('one-time expense')}><i class="material-icons">shopping_cart</i> Add one-time expense</button>
-          <button className="red" onClick={() => this.addNewItem('recurring expense')}><i class="material-icons">payment</i> Add recurring expense</button>          
-          <button className="red" onClick={() => this.addNewItem('loan')}><i class="material-icons">work</i> Add loan</button>
+          <button className="green" onClick={() => this.addNewItem('job')}><i className="material-icons">business</i> Add job</button>
+          <button className="green" onClick={() => this.addNewItem('one-time income')}><i className="material-icons">attach_money</i> Add one-time income</button>
+          <button className="green" onClick={() => this.addNewItem('recurring income')}><i className="material-icons">cached</i> Add recurring income</button>
+          <button className="red" onClick={() => this.addNewItem('one-time expense')}><i className="material-icons">shopping_cart</i> Add one-time expense</button>
+          <button className="red" onClick={() => this.addNewItem('recurring expense')}><i className="material-icons">payment</i> Add recurring expense</button>          
+          <button className="red" onClick={() => this.addNewItem('loan')}><i className="material-icons">work</i> Add loan</button>
         </p>
         <div className="simulation-item-container">{simulationItemRows}</div>
 
