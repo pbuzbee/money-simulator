@@ -199,3 +199,50 @@ input:not([type=checkbox]) {
   margin-top: 2em;
   border-top: 1px #ccc solid;
 }
+
+.or-grid {
+  display: grid;
+  grid-template-columns: 30px auto;
+  grid-auto-rows: auto;
+  grid-gap: 1em;
+}
+
+.simulation-item .or-grid {
+  margin-left: 0.8em;
+}
+
+.or-grid p:first-child {
+  grid-column: 2;
+  grid-row: 1;
+  padding-top: 0.3em;
+}
+
+.or-grid p:last-child {
+  grid-column: 2;
+  grid-row: 2;
+  padding-bottom: 0.3em;
+}
+
+.or-grid p {
+  margin: 0;
+}
+
+.or-label {
+  border-width: 2px 0 2px 2px;
+  border-style: solid;
+  height: 100%;
+  border-color: #777;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  margin: 1em 0;
+}
+
+.or-label span {
+  background: #FFF;
+  font-weight: 500;
+  margin-top: 18px;
+  line-height: 2.5em;
+  transform: translateX(-10px);
+  display: inline-block;
+}
+

@@ -99,8 +99,11 @@ class Loan extends SimulationItem {
         {this.renderDateInput(0, this.props.isDisabled, 'Loan date', this.props.simConfig.startDate.toISOString().substring(0, 10))}
         {this.renderNumberInput(1, this.props.isDisabled, 'Loan term (# of years)', 0)}
         {this.renderTextInput(2, this.props.isDisabled, 'Interest rate (%)')}
-        {this.renderNumberInput(3, this.props.isDisabled, 'Loan amount ($)', 0)}
-        {this.renderTextInput(4, this.props.isDisabled, 'Monthly payment ($/month)')}
+        <div className="or-grid">
+          {this.renderNumberInput(3, this.props.isDisabled, 'Loan amount ($)', 0)}
+          <p className="or-label"><span>OR</span></p>
+          {this.renderTextInput(4, this.props.isDisabled, 'Monthly payment ($/month)')}
+        </div>
         {this.renderEnabledToggleAndRemoveAndCloseButtons()}
       </div>
     );
@@ -548,10 +551,12 @@ class SimulationContainer extends React.Component {
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
 
         <h2>2. How far do you want to simulate?</h2>
-        <p>
-          <label><input type="number" min={(new Date()).getFullYear() + 1} name="endYear" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.endDate.getFullYear()} /> End year</label>
-          <strong>OR</strong><br />
-          <label><input name="numYears" onChange={this.handleConfigChange.bind(this)} value={numYears} type="number" min="1" /> Number of years in the future</label></p>
+        <div className="or-grid">
+          <p><label><input type="number" min={(new Date()).getFullYear() + 1} name="endYear" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.endDate.getFullYear()} /> End year</label></p>
+          <p className="or-label"><span>OR</span></p>
+          <p><label><input name="numYears" onChange={this.handleConfigChange.bind(this)} value={numYears} type="number" min="1" /> Number of years in the future</label></p>
+          
+        </div>
 
         <h2>3. Simulate life events</h2>
         <p>Add financial events in your life that you want to simulate.</p>
