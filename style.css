@@ -1,24 +1,32 @@
 /* Body and main container */
 
+:root {
+  --font: 'Roboto', Arial, sans-serif;
+}
+
 body {
   margin: 0;
   background: #f2f2f2;
-  height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: var(--font);
 }
 
 #simulations {
-  max-width: 1500px;
+  width: 100%;
   background: #fff;
-  min-height: 100%;
   margin: 0 auto;
-  padding: 1em;
+  padding: 1em 0;
+  border-top: 2px #e5e5e5 solid;
+}
+
+.row {
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .simulation-item-container {
   margin: 1em;
-  border: 1px #999 solid;
-  border-width: 1px 2px;
+  box-shadow: 0 0 2px #555;
 }
 
 .simulation-item-container:empty {
@@ -84,6 +92,7 @@ body {
 .recurring-expense .simulation-timeline,
 .one-time-expense .simulation-timeline {
   background: #ffcc00;
+  color: #000;
 }
 
 .job .simulation-timeline,
@@ -140,9 +149,10 @@ button {
   transition: opacity 0.5s;
   border: 1px transparent solid;
   line-height: 24px;
-  font-weight: bold;
+  font-weight: 500;
   color: #fff;
   background: #555;
+  font-family: var(--font);
 }
 
 button.green {
@@ -180,4 +190,12 @@ input:not([type=checkbox]) {
   width: 9em;
   margin-right: 0.3em;
   font-size: 15px;
+  font-family: var(--font);
+}
+
+/* Reuslts */
+
+.results {
+  margin-top: 2em;
+  border-top: 1px #ccc solid;
 }

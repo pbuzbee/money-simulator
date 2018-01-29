@@ -370,8 +370,8 @@ class SimulationResults extends React.Component {
 
   render() {
     return (
-      <div>
-        <h2>Results</h2>
+      <div class="results">
+        <h2>Simulation results</h2>
         <div id='chart-container' style={{height: '400px'}}>
           <canvas id="chart-canvas"></canvas>
         </div>
@@ -542,8 +542,7 @@ class SimulationContainer extends React.Component {
     var numYears = this.state.simulationConfig.endDate.getFullYear() - (new Date()).getFullYear();
 
     return (
-      <div>
-        <h1>Net worth simulator</h1>
+      <article class="row">
 
         <h2>1. Enter your current net worth</h2>
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
@@ -573,7 +572,7 @@ class SimulationContainer extends React.Component {
 
           <SimulationResults results={this.state.simulationStatus.results} labels={this.state.simulationStatus.labels} />
         }
-      </div>
+      </article>
     );
   }
 }
