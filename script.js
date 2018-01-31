@@ -346,12 +346,12 @@ class SimulationResults extends React.Component {
   getDatasets() {
     var datasets = [];
     for (var i = 0; i < this.props.results.length; i++) {
-      datasets.push(this.getLineProperties(i, this.props.results[i].name, this.props.results[i].data));
+      datasets.push(this.getLineProperties(this.props.results[i].name, this.props.results[i].data));
     }
     return datasets;
   }
 
-  getLineProperties(i, label, data) {
+  getLineProperties(label, data) {
     var dataset = {
       label: label,
       data: data,
@@ -359,25 +359,25 @@ class SimulationResults extends React.Component {
       lineTension: 0, // straight lines
       pointRadius: 0, // no points
     };
-    switch (i) {
-      case 4: // 5th (worst case)
+    switch (label) {
+      case 'Worst case': // 5th (worst case)
         dataset.borderColor = '#d32f2f';
         dataset.borderDash = [15, 5];
         dataset.borderWidth = 1;
         break;
-      case 3: // 25th (unlucky)
+      case 'Unlucky': // 25th (unlucky)
         dataset.borderColor = '#d32f2f';
         dataset.borderWidth = 2;
         break;
-      case 2: // 50th (median)
+      case 'Median': // 50th (median)
         dataset.borderColor = '#000000';
         dataset.borderWidth = 3;
         break;
-      case 1: // 75th (lucky)
+      case 'Lucky': // 75th (lucky)
         dataset.borderColor = '#388e3c';
         dataset.borderWidth = 2;
         break;
-      case 0: // 95th (best case)
+      case 'Best case': // 95th (best case)
         dataset.borderColor = '#388e3c';
         dataset.borderDash = [10, 5];
         dataset.borderWidth = 1;
@@ -489,10 +489,13 @@ class SimulationContainer extends React.Component {
 
   workerMessageHandler(e) {
     var simStatus = this.state.simulationStatus;
+    console.log('Client received message: ' + JSON.stringify(e.data));
     switch (e.data.type) {
       case 'percent':
         simStatus.percent = e.data.percent;
-        this.worker.postMessage({action: 'continue'});
+        if (simStatus.active) {
+          this.worker.postMessage({action: 'continue'});
+        }
         break;
       case 'status':
         simStatus.active = e.data.active; break;

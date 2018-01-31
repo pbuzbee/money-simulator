@@ -14,28 +14,23 @@ class SimulationHandler {
   }
 
   continueSimulations() {    
-    // Run through 10 simulations and send a status update
-    for (var i = this.currentSim; i < this.currentSim + 10 && i < this.totalSims; i++) {
-      console.log('Running simulation #' + i);
-      this.runSimulation();
-    }
     if (this.abort) {
       this.monthlyBalances = {};
       this.sendStatusMessage(false /* active */);
       return;
     }
-    if (i >= this.totalSims) {
+
+    console.log('Running simulation #' + this.currentSim);
+    this.runSimulation();
+    this.currentSim++;
+    
+    if (this.currentSim >= this.totalSims) {
       // If this is the last simulation, send the final results.
-      //console.log("BALANCES");
-      //console.log(JSON.stringify(this.monthlyBalances));
       this.calculateAndSendResults();
       this.sendStatusMessage(false /* active */);
-      return;
-    }
-
-    this.currentSim = i;
-    console.log("Finished 10 sims...");
-    this.sendStatusPercent(Math.round(100 * i / this.totalSims));
+    } else {
+      this.sendStatusPercent(Math.round(100 * this.currentSim / this.totalSims));
+    }   
   }
 
   abortSimulation() {
@@ -284,7 +279,7 @@ var simulationHandler = new SimulationHandler();
 
 onmessage = function(e) {
   var message = e.data;
-  console.log(message);
+  console.log('Worker received message: ' + JSON.stringify(message));
   switch (message.action) {
     case 'start':
       console.log('setting config');
