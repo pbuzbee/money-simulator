@@ -271,13 +271,15 @@ class Job extends SimulationItem {
 
 class SimulationManager extends React.Component {
   render() {
+    var percentString = this.props.status.percent.toString() + '%';
     return (
       <div className="simulation-manager">
         <h2>4. Run simulations</h2>
         <p><label><input type="number" name="numSims" onChange={this.props.onChange} value={this.props.config.numSims} min="1" /> # of simulations to run</label></p>
-        <p><button className="blue" onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button> {this.props.status.percent > 0 && this.props.status.active ? this.props.status.percent.toString() + '%' : null}</p>
+        <p><button className="blue" onClick={this.props.onStart}>{this.props.status.active ? 'Cancel' : 'Start'}</button></p>
+        {this.props.status.active ? <p className="progress-bar"><span style={{width: percentString}}>{percentString}</span></p> : null}
       </div>
-    );
+    );     
   }
 }
 
@@ -443,6 +445,9 @@ class SimulationContainer extends React.Component {
   startOrStopSimulations() {
     var workerMessage = this.state;
     workerMessage.action = workerMessage.simulationStatus.active ? 'abort' : 'start';
+    var simStatus = this.state.simulationStatus;
+    simStatus.percent = 0;
+    this.setState({simulationStatus: simStatus});
     this.worker.postMessage(workerMessage);
   }
 
