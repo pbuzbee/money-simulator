@@ -328,6 +328,9 @@ class SimulationResults extends React.Component {
             },
           },
         },
+        legend: {
+          position: 'right',
+        },
         maintainAspectRatio: false,
         responsive: true,
       }
@@ -343,34 +346,67 @@ class SimulationResults extends React.Component {
   getDatasets() {
     var datasets = [];
     for (var i = 0; i < this.props.results.length; i++) {
-      datasets.push({
-        label: this.props.results[i].name,
-        data: this.props.results[i].data,
-        borderColor: this.getPercentileColor(i),
-        fill: false,
-        lineTension: 0, // straight lines
-        pointRadius: 0,
-      });
+      datasets.push(this.getLineProperties(i, this.props.results[i].name, this.props.results[i].data));
     }
     return datasets;
+  }
+
+  getLineProperties(i, label, data) {
+    var dataset = {
+      label: label,
+      data: data,
+      fill: false,
+      lineTension: 0, // straight lines
+      pointRadius: 0, // no points
+    };
+    switch (i) {
+      case 4: // 5th (worst case)
+        dataset.borderColor = '#d32f2f';
+        dataset.borderDash = [15, 5];
+        dataset.borderWidth = 1;
+        break;
+      case 3: // 25th (unlucky)
+        dataset.borderColor = '#d32f2f';
+        dataset.borderWidth = 2;
+        break;
+      case 2: // 50th (median)
+        dataset.borderColor = '#000000';
+        dataset.borderWidth = 3;
+        break;
+      case 1: // 75th (lucky)
+        dataset.borderColor = '#388e3c';
+        dataset.borderWidth = 2;
+        break;
+      case 0: // 95th (best case)
+        dataset.borderColor = '#388e3c';
+        dataset.borderDash = [10, 5];
+        dataset.borderWidth = 1;
+        break;
+    }
+    return dataset;
   }
 
 
   getPercentileColor(i) {
     var color;
     switch (i) {
-      case 4: // 5th
-        color = '#ff0000'; break;
-      case 3: // 25th
-        color = '#ffaa00'; break;
-      case 2: // 50th
-        color = '#000000'; break;
-      case 1: // 75th
-        color = '#0000aa'; break;
-      case 0: // 95th
-        color = '#00ff00'; break;
+
     }
     return color;
+  }
+
+  getBorderDash(i) {
+    var dash;
+    switch (i) {
+      case 4: // 5th (worst case)
+      case 0: // 95th (best case)
+        
+      case 3: // 25th (unlucky)
+      case 2: // 50th (median)
+      case 1: // 75th (lucky)
+        dash = [1, 0]; break;
+    }
+    return dash;
   }
 
   render() {
