@@ -338,7 +338,7 @@ class SimulationResults extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.oldProps === JSON.stringify(this.props)) return;
+    if (this.oldProps !== JSON.stringify(this.props)) return;
     this.chart.data.datasets = this.getDatasets();
     this.chart.update();
   }
@@ -473,6 +473,10 @@ class SimulationContainer extends React.Component {
     this.setState({simulationItems: simulationItems, activeItem: -1});
   }
 
+  componentDidUpdate() {
+    this.updateUrl();
+  }
+
   toggleActiveItem(i) {
     var newActive = this.state.activeItem === i ? -1 : i;
     this.setState({activeItem: newActive});
@@ -521,14 +525,15 @@ class SimulationContainer extends React.Component {
     }
     // Roughly parse the parameter and check for the main properties.
     var urlParams = JSON.parse(decodeURIComponent(urlParam[1]));
-    if (!urlParams.simulationItems || !urlParams.simulationConfig || !urlParams.simulationConfig.startDate || !urlParams.simulationConfig.endDate || !urlParams.simulationConfig.numSims || !urlParams.simulationConfig.initialBalance) {
+    if (!urlParams.simulationItems || !urlParams.simulationConfig || !urlParams.simulationConfig.endDate || !urlParams.simulationConfig.numSims || !urlParams.simulationConfig.initialBalance) {
       alert("Could not load from URL: Invalid configuration.");
       return;
     }
+    delete urlParams.simulationConfig.startDate;
 
-    // Interpret the date, then turn the set of simulation items back into an array.
+    // Interpret the end date, then turn the set of simulation items back into an array.
     urlParams.simulationConfig.endDate = new Date(urlParams.simulationConfig.endDate);
-    urlParams.simulationConfig.startDate = new Date(urlParams.simulationConfig.startDate);
+    urlParams.simulationConfig.startDate = new Date();
     var simulationItems = [];
     for (var i = 0; urlParams.simulationItems[i]; i++) {
       simulationItems.push(urlParams.simulationItems[i]);
@@ -539,12 +544,12 @@ class SimulationContainer extends React.Component {
     });
   }
 
-  createShareUrl() {
+  updateUrl() {
     var configToSerialize = {};
     configToSerialize.simulationItems = Object.assign({}, this.state.simulationItems);
     configToSerialize.simulationConfig = Object.assign({}, this.state.simulationConfig);
 
-    this.setState({shareUrl: document.location.protocol + '//' + document.location.host + document.location.pathname + '?s=' + encodeURIComponent(JSON.stringify(configToSerialize))});
+    history.pushState({}, '', document.location.protocol + '//' + document.location.host + document.location.pathname + '?s=' + encodeURIComponent(JSON.stringify(configToSerialize)));
   }
 
   handleItemChange(e) {
@@ -619,6 +624,14 @@ class SimulationContainer extends React.Component {
     }
   }
 
+  closeSharebox() {
+    this.setState({shareUrl: null});
+  }
+
+  selectInputText(event) {
+    event.target.select();
+  }
+
   render() {
     var simulationItemRows = [];
     for (var i = this.state.simulationItems.length - 1; i >= 0; i--) {
@@ -629,9 +642,6 @@ class SimulationContainer extends React.Component {
 
     return (
       <article className="row">
-
-        <p className="actions"><button className="share material-icons" onClick={this.createShareUrl.bind(this)}>share</button>
-          {this.state.shareUrl ? <input type='text' value={this.state.shareUrl} readOnly={true} /> : null}</p>
 
         <h2>1. Enter your current net worth</h2>
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
