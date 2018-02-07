@@ -437,7 +437,6 @@ class SimulationContainer extends React.Component {
         startDate: new Date(),
         endDate: endDate,
         numSims: 5,
-        debug: false,
         initialBalance: 0,
       },
       simulationStatus: {
@@ -447,6 +446,7 @@ class SimulationContainer extends React.Component {
         labels: {},
         finished: false,
       },
+      shareUrl: null,
     };
     this.worker = new Worker('worker.js?' + (Date.now()));
     this.worker.onmessage = this.workerMessageHandler.bind(this);
@@ -482,6 +482,7 @@ class SimulationContainer extends React.Component {
     var workerMessage = this.state;
     workerMessage.action = workerMessage.simulationStatus.active ? 'abort' : 'start';
     var simStatus = this.state.simulationStatus;
+    simStatus.results = {};
     simStatus.percent = 0;
     this.setState({simulationStatus: simStatus});
     this.worker.postMessage(workerMessage);
@@ -506,6 +507,44 @@ class SimulationContainer extends React.Component {
         break;
     }
     this.setState({simulationStatus: simStatus});
+  }
+
+  componentDidMount() {
+    this.loadFromUrl();
+  }
+
+  loadFromUrl() {
+    // Search for the `s=` url parameter
+    var urlParam = window.location.search.match(/^\?s=([^&]+)/);
+    if (!urlParam) {
+      return;
+    }
+    // Roughly parse the parameter and check for the main properties.
+    var urlParams = JSON.parse(decodeURIComponent(urlParam[1]));
+    if (!urlParams.simulationItems || !urlParams.simulationConfig || !urlParams.simulationConfig.startDate || !urlParams.simulationConfig.endDate || !urlParams.simulationConfig.numSims || !urlParams.simulationConfig.initialBalance) {
+      alert("Could not load from URL: Invalid configuration.");
+      return;
+    }
+
+    // Interpret the date, then turn the set of simulation items back into an array.
+    urlParams.simulationConfig.endDate = new Date(urlParams.simulationConfig.endDate);
+    urlParams.simulationConfig.startDate = new Date(urlParams.simulationConfig.startDate);
+    var simulationItems = [];
+    for (var i = 0; urlParams.simulationItems[i]; i++) {
+      simulationItems.push(urlParams.simulationItems[i]);
+    }
+    this.setState({
+      simulationItems: simulationItems,
+      simulationConfig: urlParams.simulationConfig
+    });
+  }
+
+  createShareUrl() {
+    var configToSerialize = {};
+    configToSerialize.simulationItems = Object.assign({}, this.state.simulationItems);
+    configToSerialize.simulationConfig = Object.assign({}, this.state.simulationConfig);
+
+    this.setState({shareUrl: document.location.protocol + '//' + document.location.host + document.location.pathname + '?s=' + encodeURIComponent(JSON.stringify(configToSerialize))});
   }
 
   handleItemChange(e) {
@@ -591,6 +630,9 @@ class SimulationContainer extends React.Component {
     return (
       <article className="row">
 
+        <p className="actions"><button className="share material-icons" onClick={this.createShareUrl.bind(this)}>share</button>
+          {this.state.shareUrl ? <input type='text' value={this.state.shareUrl} readOnly={true} /> : null}</p>
+
         <h2>1. Enter your current net worth</h2>
         <p><label><input type="number" name="initialBalance" onChange={this.handleConfigChange.bind(this)} value={this.state.simulationConfig.initialBalance} /> Initial net worth ($)</label></p>
 
@@ -616,6 +658,7 @@ class SimulationContainer extends React.Component {
         <div className="simulation-item-container">{simulationItemRows}</div>
 
         <SimulationManager onStart={() => this.startOrStopSimulations()} onChange={this.handleConfigChange.bind(this)} config={this.state.simulationConfig} status={this.state.simulationStatus}  />
+        <p>Simulation expensiveness: {numYears * this.state.simulationConfig.numSims * (1 + this.state.simulationItems.length)}</p>
 
         {this.state.simulationStatus.finished &&
 
